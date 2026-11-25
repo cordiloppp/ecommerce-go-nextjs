@@ -22,3 +22,6 @@ npm-debug.log*
 Thumbs.db
 .vercel
 .env*
+
+# TypeScript build cache
+*.tsbuildinfo
