@@ -18,6 +18,8 @@ type Config struct {
 	// DemoReadOnly blocks every write unless the session was opened with OwnerPassword.
 	DemoReadOnly  bool
 	OwnerPassword string
+	// DemoEmail is the account visitors enter without a password in the read-only demo.
+	DemoEmail string
 }
 
 // Load lee la configuración del entorno y aplica valores por defecto razonables
@@ -30,6 +32,7 @@ func Load() (Config, error) {
 		CORSOrigin:    getenv("CORS_ORIGIN", "http://localhost:3000"),
 		DemoReadOnly:  os.Getenv("DEMO_READONLY") == "true",
 		OwnerPassword: os.Getenv("OWNER_PASSWORD"),
+		DemoEmail:     getenv("DEMO_EMAIL", "admin@demo.com"),
 	}
 
 	// Platforms like Vercel assign the port through PORT.

@@ -1,6 +1,6 @@
 # E-commerce de productos electrónicos
 
-**Demo en vivo:** https://ecommerce-go-nextjs.vercel.app · admin: `admin@demo.com` / `admin1234` · cupón `DEMO10`
+**Demo en vivo:** https://ecommerce-go-nextjs.vercel.app · sin cuenta: agrega al carrito, aplica `DEMO10`, `BIENVENIDA15` o `AHORRA200` y paga (simulado), o abre el panel de admin
 
 > La demo pública es de **solo lectura** (`DEMO_READONLY=true`): se puede ver el catálogo y el panel, pero registrarse, usar el carrito, comprar o editar responde 403. Solo una sesión abierta con `OWNER_PASSWORD` puede escribir.
 

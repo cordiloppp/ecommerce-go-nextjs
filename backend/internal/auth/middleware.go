@@ -36,7 +36,7 @@ func RequireAuth(m *Manager) func(http.Handler) http.Handler {
 func DemoReadOnly(m *Manager) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			if !m.ReadOnly() || r.URL.Path == "/api/auth/login" {
+			if !m.ReadOnly() || r.URL.Path == "/api/auth/login" || r.URL.Path == "/api/auth/demo" {
 				next.ServeHTTP(w, r)
 				return
 			}

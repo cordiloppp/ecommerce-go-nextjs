@@ -1,12 +1,11 @@
 "use client";
 
 import Link from "next/link";
-
-import ProductArt from "@/components/ProductArt";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
-import { api, ApiError } from "@/lib/api";
+import ProductArt from "@/components/ProductArt";
+import { ApiError } from "@/lib/api";
 import { formatMoney } from "@/lib/format";
 import type { DiscountPreview } from "@/lib/types";
 import { useAuth } from "@/store/auth";
@@ -15,62 +14,58 @@ import { useCart } from "@/store/cart";
 export default function CartPage() {
   const router = useRouter();
   const { token, hydrated } = useAuth();
-  const { cart, refresh, loading } = useCart();
+  const { cart, refresh, loading, update, remove, preview } = useCart();
 
   const [code, setCode] = useState("");
   const [discount, setDiscount] = useState<DiscountPreview | null>(null);
-  const [discountError, setDiscountError] = useState<string | null>(null);
+  const [message, setMessage] = useState<string | null>(null);
 
   useEffect(() => {
-    if (hydrated && !token) router.push("/login?next=/cart");
-  }, [hydrated, token, router]);
-
-  useEffect(() => {
-    if (token) refresh();
-  }, [token, refresh]);
+    if (hydrated) refresh();
+  }, [hydrated, token, refresh]);
 
   async function changeQty(itemId: string, quantity: number) {
     if (quantity < 1) return;
+    setMessage(null);
     try {
-      await api.updateCartItem(itemId, quantity);
-      await refresh();
+      await update(itemId, quantity);
       setDiscount(null);
     } catch (e) {
-      alert(e instanceof ApiError ? e.message : "Error");
+      setMessage(e instanceof ApiError ? e.message : "No se pudo actualizar");
     }
   }
 
-  async function remove(itemId: string) {
-    await api.removeCartItem(itemId);
-    await refresh();
+  async function removeItem(itemId: string) {
+    await remove(itemId);
     setDiscount(null);
   }
 
   async function applyDiscount() {
-    setDiscountError(null);
+    setMessage(null);
     setDiscount(null);
     try {
-      const res = await api.applyDiscount(code);
-      setDiscount(res);
+      setDiscount(await preview(code.trim()));
     } catch (e) {
-      setDiscountError(e instanceof ApiError ? e.message : "Error");
+      setMessage(e instanceof ApiError ? e.message : "No se pudo aplicar el cupón");
     }
   }
 
   function goToCheckout() {
-    const url = discount ? `/checkout?code=${encodeURIComponent(discount.code)}` : "/checkout";
-    router.push(url);
+    router.push(discount ? `/checkout?code=${encodeURIComponent(discount.code)}` : "/checkout");
   }
 
-  if (!hydrated || loading) return <p>Cargando carrito...</p>;
+  if (!hydrated || loading) return <p className="text-gray-500">Cargando carrito…</p>;
 
   if (!cart || cart.items.length === 0) {
     return (
-      <div>
-        <h1 className="mb-4 text-[28px] font-medium tracking-[-0.01em]">Tu carrito</h1>
-        <p className="text-gray-500">El carrito está vacío.</p>
-        <Link href="/" className="mt-4 inline-block text-brand hover:underline">
-          ← Ver productos
+      <div className="mx-auto max-w-md py-16 text-center">
+        <h1 className="text-[28px] font-medium tracking-[-0.01em]">Tu carrito está vacío</h1>
+        <p className="mt-2 text-gray-600">Agrega productos del catálogo, no necesitas cuenta.</p>
+        <Link
+          href="/"
+          className="mt-6 inline-flex h-10 items-center rounded-[10px] bg-brand px-5 text-[15px] font-medium text-white transition-colors hover:bg-brand-dark"
+        >
+          Ver catálogo
         </Link>
       </div>
     );
@@ -79,112 +74,99 @@ export default function CartPage() {
   const total = discount ? discount.total_cents : cart.subtotal_cents;
 
   return (
-    <div className="grid gap-8 lg:grid-cols-3">
-      <div className="lg:col-span-2">
-        <h1 className="mb-4 text-[28px] font-medium tracking-[-0.01em]">Tu carrito</h1>
-        <div className="space-y-3">
+    <div className="grid gap-8 lg:grid-cols-[1fr_360px]">
+      <div>
+        <h1 className="mb-6 text-[28px] font-medium tracking-[-0.01em]">Tu carrito</h1>
+        <div className="divide-y rounded-2xl border bg-white">
           {cart.items.map((it) => (
-            <div
-              key={it.id}
-              className="flex items-center gap-4 rounded-lg border bg-white p-3"
-            >
+            <div key={it.id} className="flex flex-wrap items-center gap-4 p-4 sm:flex-nowrap">
               <div className="h-16 w-20 shrink-0 overflow-hidden rounded-[10px] border">
                 <ProductArt name={it.name} />
               </div>
-              <div className="flex-1">
-                <Link
-                  href={`/products/${it.slug}`}
-                  className="font-medium hover:text-brand"
-                >
+              <div className="min-w-0 flex-1">
+                <Link href={`/products/${it.slug}`} className="font-medium transition-colors hover:text-gray-600">
                   {it.name}
                 </Link>
-                <p className="text-sm text-gray-500">
-                  {formatMoney(it.unit_price_cents)} / ud.
-                </p>
+                <p className="text-[14px] tabular-nums text-gray-500">{formatMoney(it.unit_price_cents)} c/u</p>
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center rounded-[10px] border">
                 <button
                   onClick={() => changeQty(it.id, it.quantity - 1)}
-                  className="h-7 w-7 rounded border hover:bg-gray-100"
+                  disabled={it.quantity <= 1}
+                  aria-label={`Quitar uno de ${it.name}`}
+                  className="size-9 rounded-l-[10px] transition-colors hover:bg-gray-100 disabled:opacity-40"
                 >
                   −
                 </button>
-                <span className="w-8 text-center">{it.quantity}</span>
+                <span className="w-8 text-center tabular-nums">{it.quantity}</span>
                 <button
                   onClick={() => changeQty(it.id, it.quantity + 1)}
                   disabled={it.quantity >= it.stock}
-                  className="h-7 w-7 rounded border hover:bg-gray-100 disabled:opacity-40"
+                  aria-label={`Agregar uno de ${it.name}`}
+                  className="size-9 rounded-r-[10px] transition-colors hover:bg-gray-100 disabled:opacity-40"
                 >
                   +
                 </button>
               </div>
-              <div className="w-24 text-right font-semibold">
-                {formatMoney(it.line_total_cents)}
-              </div>
+              <div className="w-24 text-right font-medium tabular-nums">{formatMoney(it.line_total_cents)}</div>
               <button
-                onClick={() => remove(it.id)}
-                className="text-sm text-red-500 hover:underline"
+                onClick={() => removeItem(it.id)}
+                className="text-[14px] text-gray-500 transition-colors hover:text-gray-900"
               >
                 Quitar
               </button>
             </div>
           ))}
         </div>
+        {message && <p className="mt-3 text-[14px] text-red-600">{message}</p>}
       </div>
 
-      <aside className="h-fit rounded-lg border bg-white p-5">
-        <h2 className="mb-4 text-lg font-semibold">Resumen</h2>
+      <aside className="h-fit rounded-2xl border bg-white p-5">
+        <h2 className="mb-4 text-[17px] font-medium">Resumen</h2>
 
-        <div className="mb-4">
-          <label className="mb-1 block text-sm text-gray-600">
-            Código de descuento
-          </label>
-          <div className="flex gap-2">
-            <input
-              value={code}
-              onChange={(e) => setCode(e.target.value)}
-              placeholder="DEMO10"
-              className="flex-1 rounded border px-3 py-2 uppercase"
-            />
-            <button
-              onClick={applyDiscount}
-              className="rounded border px-3 py-2 hover:bg-gray-100"
-            >
-              Aplicar
-            </button>
-          </div>
-          {discountError && (
-            <p className="mt-1 text-sm text-red-600">{discountError}</p>
-          )}
-          {discount && (
-            <p className="mt-1 text-sm text-green-600">
-              Cupón {discount.code} aplicado.
-            </p>
-          )}
+        <label className="mb-1 block text-[14px] text-gray-600" htmlFor="coupon">
+          Cupón de descuento
+        </label>
+        <div className="flex gap-2">
+          <input
+            id="coupon"
+            value={code}
+            onChange={(e) => setCode(e.target.value)}
+            placeholder="DEMO10"
+            className="input uppercase"
+          />
+          <button
+            onClick={applyDiscount}
+            disabled={!code.trim()}
+            className="h-10 shrink-0 rounded-[10px] border px-3 text-[14px] transition-colors hover:bg-gray-100 disabled:opacity-50"
+          >
+            Aplicar
+          </button>
         </div>
+        {discount && <p className="mt-2 text-[14px] text-[#16a34a]">Cupón {discount.code} aplicado</p>}
 
-        <div className="space-y-1 border-t pt-3 text-sm">
+        <dl className="mt-5 space-y-2 border-t pt-4 text-[15px]">
           <div className="flex justify-between">
-            <span>Subtotal</span>
-            <span>{formatMoney(cart.subtotal_cents)}</span>
+            <dt className="text-gray-600">Subtotal</dt>
+            <dd className="tabular-nums">{formatMoney(cart.subtotal_cents)}</dd>
           </div>
           {discount && discount.discount_cents > 0 && (
-            <div className="flex justify-between text-green-600">
-              <span>Descuento</span>
-              <span>−{formatMoney(discount.discount_cents)}</span>
+            <div className="flex justify-between text-[#16a34a]">
+              <dt>Descuento</dt>
+              <dd className="tabular-nums">−{formatMoney(discount.discount_cents)}</dd>
             </div>
           )}
-          <div className="flex justify-between border-t pt-2 text-base font-semibold tabular-nums">
-            <span>Total</span>
-            <span>{formatMoney(total)}</span>
+          <div className="flex justify-between border-t pt-3 text-[17px] font-medium">
+            <dt>Total</dt>
+            <dd className="tabular-nums">{formatMoney(total)}</dd>
           </div>
-        </div>
+        </dl>
 
         <button
           onClick={goToCheckout}
-          className="mt-4 w-full rounded bg-brand py-2 text-white hover:bg-brand-dark"
+          className="mt-5 h-11 w-full rounded-[10px] bg-brand text-[15px] font-medium text-white transition-colors hover:bg-brand-dark active:scale-[0.98]"
         >
-          Finalizar compra
+          Continuar al pago
         </button>
       </aside>
     </div>

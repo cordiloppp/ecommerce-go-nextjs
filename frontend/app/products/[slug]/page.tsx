@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import ProductArt from "@/components/ProductArt";
@@ -9,14 +9,11 @@ import { api, ApiError } from "@/lib/api";
 import { formatMoney } from "@/lib/format";
 import { specsFor } from "@/lib/specs";
 import type { Product } from "@/lib/types";
-import { useAuth } from "@/store/auth";
 import { useCart } from "@/store/cart";
 
 export default function ProductPage() {
   const { slug } = useParams<{ slug: string }>();
-  const router = useRouter();
-  const { token } = useAuth();
-  const { refresh } = useCart();
+  const { add } = useCart();
 
   const [product, setProduct] = useState<Product | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -33,16 +30,11 @@ export default function ProductPage() {
   }, [slug]);
 
   async function addToCart() {
-    if (!token) {
-      router.push(`/login?next=/products/${slug}`);
-      return;
-    }
     if (!product) return;
     setBusy(true);
     setMsg(null);
     try {
-      await api.addToCart(product.id, qty);
-      await refresh();
+      await add(product, qty);
       setMsg("Agregado al carrito");
     } catch (e) {
       setMsg(e instanceof ApiError ? e.message : "No se pudo agregar");
@@ -55,7 +47,7 @@ export default function ProductPage() {
   if (!product)
     return <div className="grid gap-10 md:grid-cols-2"><div className="aspect-[4/3] rounded-2xl border bg-white" /></div>;
 
-  const specs = specsFor(product.name, product.category);
+  const specs = specsFor(product.name);
   const soldOut = product.stock <= 0;
 
   return (

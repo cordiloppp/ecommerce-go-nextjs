@@ -1,34 +1,25 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 import ProductArt from "@/components/ProductArt";
-import { api, ApiError } from "@/lib/api";
+import { ApiError } from "@/lib/api";
 import { formatMoney } from "@/lib/format";
 import { specsFor } from "@/lib/specs";
 import type { Product } from "@/lib/types";
-import { useAuth } from "@/store/auth";
 import { useCart } from "@/store/cart";
 
 export default function ProductCard({ product }: { product: Product }) {
-  const { token } = useAuth();
-  const { refresh } = useCart();
-  const router = useRouter();
+  const { add } = useCart();
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState<string | null>(null);
 
   async function addToCart() {
-    if (!token) {
-      router.push("/login?next=/");
-      return;
-    }
     setBusy(true);
     setMsg(null);
     try {
-      await api.addToCart(product.id, 1);
-      await refresh();
+      await add(product, 1);
       setMsg("Agregado");
     } catch (e) {
       setMsg(e instanceof ApiError ? e.message : "No se pudo agregar");
@@ -39,7 +30,7 @@ export default function ProductCard({ product }: { product: Product }) {
   }
 
   const soldOut = product.stock <= 0;
-  const specs = specsFor(product.name, product.category).slice(0, 2);
+  const specs = specsFor(product.name).slice(0, 2);
 
   return (
     <article className="group flex flex-col overflow-hidden rounded-2xl border bg-white transition-colors duration-150 hover:border-gray-300">

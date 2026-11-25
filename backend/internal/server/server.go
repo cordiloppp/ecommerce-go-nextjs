@@ -29,6 +29,7 @@ func New(cfg config.Config, pool *pgxpool.Pool) http.Handler {
 
 	// Servicios
 	userSvc := user.NewService(q, jwtMgr, cfg.OwnerPassword)
+	userSvc.SetDemoEmail(cfg.DemoEmail)
 	productSvc := product.NewService(q)
 	discountSvc := discount.NewService(q)
 	cartSvc := cart.NewService(q)
@@ -64,6 +65,7 @@ func New(cfg config.Config, pool *pgxpool.Pool) http.Handler {
 		// Rutas públicas
 		userH.RoutesPublic(r)
 		productH.RoutesPublic(r)
+		discountH.RoutesPublic(r)
 
 		// Rutas autenticadas
 		r.Group(func(r chi.Router) {

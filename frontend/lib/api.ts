@@ -83,6 +83,7 @@ export const api = {
       method: "POST",
       body: { email, password, name },
     }),
+  demoLogin: () => request<AuthResponse>("/auth/demo", { method: "POST" }),
   login: (email: string, password: string) =>
     request<AuthResponse>("/auth/login", {
       method: "POST",
@@ -121,6 +122,11 @@ export const api = {
       auth: true,
       body: { code },
     }),
+
+  previewDiscount: (code: string, subtotalCents: number) =>
+    request<DiscountPreview>(
+      `/discounts/preview?code=${encodeURIComponent(code)}&subtotal_cents=${subtotalCents}`,
+    ),
 
   // --- Checkout / pedidos ---
   checkout: (discountCode?: string) =>

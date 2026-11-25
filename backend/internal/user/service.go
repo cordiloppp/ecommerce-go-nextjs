@@ -21,6 +21,7 @@ type Service struct {
 	q             *db.Queries
 	jwt           *auth.Manager
 	ownerPassword string
+	demoEmail     string
 }
 
 // NewService crea el servicio de usuarios. ownerPassword (opcional) abre
@@ -74,6 +75,30 @@ func (s *Service) Register(ctx context.Context, email, password, name string) (P
 }
 
 var errInvalidCredentials = httpx.NewError(http.StatusUnauthorized, "invalid_credentials", "email o contraseña incorrectos")
+
+// SetDemoEmail sets the account opened by DemoSession.
+func (s *Service) SetDemoEmail(email string) { s.demoEmail = strings.ToLower(strings.TrimSpace(email)) }
+
+// DemoAvailable reports whether visitors can enter without an account.
+func (s *Service) DemoAvailable() bool { return s.jwt.ReadOnly() && s.demoEmail != "" }
+
+// DemoSession opens the demo account with a read-only token, without a password.
+func (s *Service) DemoSession(ctx context.Context) (Public, string, error) {
+	if !s.DemoAvailable() {
+		return Public{}, "", httpx.NotFound("demo_unavailable", "no hay demo disponible")
+	}
+	u, err := s.q.GetUserByEmail(ctx, s.demoEmail)
+	if errors.Is(err, pgx.ErrNoRows) {
+		return Public{}, "", httpx.NotFound("demo_unavailable", "no hay demo disponible")
+	} else if err != nil {
+		return Public{}, "", err
+	}
+	token, err := s.jwt.Generate(u.ID, u.Role)
+	if err != nil {
+		return Public{}, "", err
+	}
+	return toPublic(u), token, nil
+}
 
 // Login valida las credenciales y devuelve el usuario y un token de acceso.
 func (s *Service) Login(ctx context.Context, email, password string) (Public, string, error) {

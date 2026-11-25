@@ -5,6 +5,12 @@
  */
 
 type Kind =
+  | "earbuds"
+  | "soundbar"
+  | "arm"
+  | "microsd"
+  | "hub"
+  | "cable"
   | "headphones"
   | "keyboard"
   | "mouse"
@@ -24,6 +30,12 @@ const VOLT = "#f2c230";
 
 export function kindOf(name: string, category = ""): Kind {
   const s = `${name} ${category}`.toLowerCase();
+  if (/sport|earbud/.test(s)) return "earbuds";
+  if (/barra de sonido|soundbar/.test(s)) return "soundbar";
+  if (/brazo/.test(s)) return "arm";
+  if (/microsd|memoria/.test(s)) return "microsd";
+  if (/\bhub\b/.test(s)) return "hub";
+  if (/\bcable\b/.test(s)) return "cable";
   if (/aud[ií]fono|auricular|headphone/.test(s)) return "headphones";
   if (/teclado|keyboard/.test(s)) return "keyboard";
   if (/mouse|rat[oó]n/.test(s)) return "mouse";
@@ -160,6 +172,93 @@ function Device({ kind }: { kind: Kind }) {
         </g>
       );
     }
+    case "earbuds":
+      return (
+        <g>
+          <Shadow rx={90} cy={238} />
+          <rect x={130} y={130} width={140} height={100} rx={44} fill={BODY} />
+          <path d="M136 168 H264" stroke={INK} strokeWidth={3} />
+          <path d="M130 160 C130 120 270 120 270 160" fill={EDGE} />
+          <ellipse cx={176} cy={112} rx={20} ry={24} fill={BODY} />
+          <rect x={170} y={124} width={12} height={34} rx={6} fill={BODY} />
+          <ellipse cx={226} cy={112} rx={20} ry={24} fill={BODY} />
+          <rect x={220} y={124} width={12} height={34} rx={6} fill={BODY} />
+          <circle cx={200} cy={200} r={4} fill={VOLT} />
+        </g>
+      );
+    case "soundbar":
+      return (
+        <g>
+          <Shadow rx={160} cy={236} />
+          <rect x={40} y={176} width={250} height={44} rx={20} fill={BODY} />
+          {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13].map((i) => (
+            <circle key={i} cx={62 + i * 15.5} cy={198} r={3} fill={INK} />
+          ))}
+          <rect x={300} y={120} width={64} height={100} rx={12} fill={BODY} />
+          <circle cx={332} cy={170} r={22} fill={INK} />
+          <circle cx={332} cy={170} r={10} fill={EDGE} />
+          <rect x={40} y={210} width={250} height={6} rx={3} fill={VOLT} opacity={0.9} />
+        </g>
+      );
+    case "arm":
+      return (
+        <g>
+          <Shadow rx={70} cy={252} />
+          <rect x={150} y={226} width={60} height={22} rx={6} fill={BODY} />
+          <rect x={172} y={160} width={16} height={70} rx={8} fill={EDGE} />
+          <path d="M180 166 L262 112" stroke={BODY} strokeWidth={18} strokeLinecap="round" />
+          <path d="M262 112 L300 140" stroke={BODY} strokeWidth={14} strokeLinecap="round" />
+          <rect x={290} y={122} width={40} height={40} rx={6} fill={EDGE} />
+          <circle cx={180} cy={166} r={10} fill={INK} />
+          <circle cx={262} cy={112} r={9} fill={VOLT} />
+        </g>
+      );
+    case "microsd":
+      return (
+        <g>
+          <Shadow rx={70} cy={238} />
+          <path d="M150 70 H236 L256 90 V140 L248 148 V230 H150 Z" fill={BODY} transform="rotate(-8 200 150)" />
+          <g transform="rotate(-8 200 150)">
+            {[0, 1, 2, 3, 4, 5, 6, 7].map((i) => (
+              <rect key={i} x={160 + i * 10} y={78} width={6} height={26} rx={2} fill="#c9a227" />
+            ))}
+            <rect x={164} y={140} width={72} height={60} rx={6} fill={EDGE} />
+            <text x={174} y={178} fill={VOLT} fontSize={20} fontFamily="ui-monospace, monospace">256</text>
+          </g>
+        </g>
+      );
+    case "hub":
+      return (
+        <g>
+          <Shadow rx={130} cy={214} />
+          <path d="M80 170 C60 170 50 150 40 120" fill="none" stroke={BODY} strokeWidth={8} strokeLinecap="round" />
+          <rect x={80} y={146} width={250} height={52} rx={16} fill={BODY} />
+          <rect x={104} y={162} width={30} height={14} rx={3} fill={INK} />
+          <rect x={144} y={162} width={22} height={12} rx={2} fill={INK} />
+          <rect x={176} y={162} width={22} height={12} rx={2} fill={INK} />
+          <rect x={208} y={162} width={22} height={12} rx={2} fill={INK} />
+          <rect x={242} y={162} width={30} height={8} rx={2} fill={INK} />
+          <circle cx={306} cy={172} r={4} fill={VOLT} />
+        </g>
+      );
+    case "cable":
+      return (
+        <g>
+          <Shadow rx={110} cy={236} />
+          <path
+            d="M110 190 C110 120 210 110 210 150 C210 190 150 190 150 150 C150 100 290 100 290 170"
+            fill="none"
+            stroke={BODY}
+            strokeWidth={10}
+            strokeLinecap="round"
+          />
+          <rect x={96} y={186} width={28} height={40} rx={8} fill={EDGE} />
+          <rect x={102} y={222} width={16} height={12} rx={4} fill={SOFT} />
+          <rect x={276} y={166} width={28} height={40} rx={8} fill={EDGE} />
+          <rect x={282} y={202} width={16} height={12} rx={4} fill={SOFT} />
+          <rect x={96} y={196} width={28} height={4} fill={VOLT} />
+        </g>
+      );
     default:
       return (
         <g>

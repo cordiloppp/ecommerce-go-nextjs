@@ -46,6 +46,7 @@ func TestDemoReadOnly(t *testing.T) {
 	}{
 		{"lectura sin sesión", http.MethodGet, "/api/products", "", http.StatusOK},
 		{"login siempre permitido", http.MethodPost, "/api/auth/login", "", http.StatusOK},
+		{"demo sin cuenta permitido", http.MethodPost, "/api/auth/demo", "", http.StatusOK},
 		{"registro bloqueado", http.MethodPost, "/api/auth/register", "", http.StatusForbidden},
 		{"admin demo no puede editar", http.MethodPut, "/api/admin/products/1", visitor, http.StatusForbidden},
 		{"admin demo no puede borrar", http.MethodDelete, "/api/admin/products/1", visitor, http.StatusForbidden},

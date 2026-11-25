@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect } from "react";
 
+import { DEMO_READONLY } from "@/lib/session";
 import { useAuth } from "@/store/auth";
 import { useCart } from "@/store/cart";
 
@@ -21,18 +22,16 @@ function Logo() {
 
 export default function Navbar() {
   const { user, token, logout, hydrated } = useAuth();
-  const { count, refresh, clearLocal } = useCart();
+  const { count, refresh } = useCart();
   const router = useRouter();
   const pathname = usePathname();
 
   useEffect(() => {
-    if (token) refresh();
-    else clearLocal();
-  }, [token, refresh, clearLocal]);
+    if (hydrated) refresh();
+  }, [hydrated, token, refresh]);
 
   function handleLogout() {
     logout();
-    clearLocal();
     router.push("/");
   }
 
@@ -49,7 +48,7 @@ export default function Navbar() {
             Catálogo
           </Link>
 
-          {hydrated && user?.role === "admin" && (
+          {hydrated && (user?.role === "admin" || (DEMO_READONLY && !user)) && (
             <Link href="/admin" className={link("/admin")}>
               Admin
             </Link>

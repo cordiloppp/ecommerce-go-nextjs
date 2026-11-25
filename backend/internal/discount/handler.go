@@ -2,6 +2,7 @@ package discount
 
 import (
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/go-chi/chi/v5"
@@ -18,6 +19,39 @@ type Handler struct {
 // NewHandler crea el handler de descuentos.
 func NewHandler(svc *Service) *Handler {
 	return &Handler{svc: svc}
+}
+
+// RoutesPublic registra la vista previa de un cupón, sin canjearlo ni requerir sesión.
+func (h *Handler) RoutesPublic(r chi.Router) {
+	r.Get("/discounts/preview", h.preview)
+}
+
+type previewResponse struct {
+	Code          string `json:"code"`
+	SubtotalCents int64  `json:"subtotal_cents"`
+	DiscountCents int64  `json:"discount_cents"`
+	TotalCents    int64  `json:"total_cents"`
+}
+
+// preview calcula el efecto de un cupón sobre un subtotal (?code=X&subtotal_cents=N).
+func (h *Handler) preview(w http.ResponseWriter, r *http.Request) {
+	code := r.URL.Query().Get("code")
+	subtotal, err := strconv.ParseInt(r.URL.Query().Get("subtotal_cents"), 10, 64)
+	if code == "" || err != nil || subtotal <= 0 {
+		httpx.WriteError(w, httpx.BadRequest("invalid_request", "indica el cupón y un subtotal válido"))
+		return
+	}
+	d, discountCents, err := h.svc.Validate(r.Context(), code, subtotal)
+	if err != nil {
+		httpx.WriteError(w, err)
+		return
+	}
+	httpx.WriteJSON(w, http.StatusOK, previewResponse{
+		Code:          d.Code,
+		SubtotalCents: subtotal,
+		DiscountCents: discountCents,
+		TotalCents:    subtotal - discountCents,
+	})
 }
 
 // RoutesAdmin registra el CRUD de cupones bajo /admin/discounts.

@@ -23,6 +23,7 @@ func NewHandler(svc *Service) *Handler {
 func (h *Handler) RoutesPublic(r chi.Router) {
 	r.Post("/auth/register", h.register)
 	r.Post("/auth/login", h.login)
+	r.Post("/auth/demo", h.demo)
 }
 
 // RoutesProtected registra las rutas que requieren autenticación.
@@ -53,6 +54,16 @@ func (h *Handler) register(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	httpx.WriteJSON(w, http.StatusCreated, authResponse{User: u, Token: token})
+}
+
+// demo opens the read-only demo account so visitors need no account.
+func (h *Handler) demo(w http.ResponseWriter, r *http.Request) {
+	u, token, err := h.svc.DemoSession(r.Context())
+	if err != nil {
+		httpx.WriteError(w, err)
+		return
+	}
+	httpx.WriteJSON(w, http.StatusOK, authResponse{User: u, Token: token})
 }
 
 type loginRequest struct {
