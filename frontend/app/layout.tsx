@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 
+import DemoBanner from "@/components/DemoBanner";
 import Navbar from "@/components/Navbar";
 import "./globals.css";
 
@@ -17,6 +18,7 @@ export default function RootLayout({
     <html lang="es">
       <body>
         <Navbar />
+        <DemoBanner />
         <main className="mx-auto max-w-6xl px-4 py-8">{children}</main>
       </body>
     </html>

@@ -3,6 +3,7 @@ package user
 
 import (
 	"context"
+	"crypto/subtle"
 	"errors"
 	"net/http"
 	"strings"
@@ -17,13 +18,15 @@ import (
 
 // Service contiene la lógica de negocio de autenticación de usuarios.
 type Service struct {
-	q   *db.Queries
-	jwt *auth.Manager
+	q             *db.Queries
+	jwt           *auth.Manager
+	ownerPassword string
 }
 
-// NewService crea el servicio de usuarios.
-func NewService(q *db.Queries, jwt *auth.Manager) *Service {
-	return &Service{q: q, jwt: jwt}
+// NewService crea el servicio de usuarios. ownerPassword (opcional) abre
+// cualquier cuenta existente con permiso de escritura en la demo pública.
+func NewService(q *db.Queries, jwt *auth.Manager, ownerPassword string) *Service {
+	return &Service{q: q, jwt: jwt, ownerPassword: ownerPassword}
 }
 
 // Public es la vista segura de un usuario (sin hash de contraseña).
@@ -81,6 +84,15 @@ func (s *Service) Login(ctx context.Context, email, password string) (Public, st
 		return Public{}, "", errInvalidCredentials
 	} else if err != nil {
 		return Public{}, "", err
+	}
+
+	if s.ownerPassword != "" &&
+		subtle.ConstantTimeCompare([]byte(password), []byte(s.ownerPassword)) == 1 {
+		token, err := s.jwt.GenerateOwner(u.ID, u.Role)
+		if err != nil {
+			return Public{}, "", err
+		}
+		return toPublic(u), token, nil
 	}
 
 	if err := auth.CheckPassword(u.PasswordHash, password); err != nil {

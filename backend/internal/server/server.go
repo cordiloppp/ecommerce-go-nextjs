@@ -25,9 +25,10 @@ import (
 func New(cfg config.Config, pool *pgxpool.Pool) http.Handler {
 	q := db.New(pool)
 	jwtMgr := auth.NewManager(cfg.JWTSecret, cfg.JWTTTL)
+	jwtMgr.SetReadOnly(cfg.DemoReadOnly)
 
 	// Servicios
-	userSvc := user.NewService(q, jwtMgr)
+	userSvc := user.NewService(q, jwtMgr, cfg.OwnerPassword)
 	productSvc := product.NewService(q)
 	discountSvc := discount.NewService(q)
 	cartSvc := cart.NewService(q)
@@ -55,6 +56,7 @@ func New(cfg config.Config, pool *pgxpool.Pool) http.Handler {
 	}))
 
 	r.Route("/api", func(r chi.Router) {
+		r.Use(auth.DemoReadOnly(jwtMgr))
 		r.Get("/health", func(w http.ResponseWriter, _ *http.Request) {
 			httpx.WriteJSON(w, http.StatusOK, map[string]string{"status": "ok"})
 		})

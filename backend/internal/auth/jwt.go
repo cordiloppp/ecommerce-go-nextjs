@@ -12,14 +12,23 @@ import (
 type Claims struct {
 	UserID uuid.UUID `json:"uid"`
 	Role   string    `json:"role"`
+	// RW is false for sessions of the public read-only demo.
+	RW bool `json:"rw"`
 	jwt.RegisteredClaims
 }
 
 // Manager emite y valida tokens JWT firmados con HMAC.
 type Manager struct {
-	secret []byte
-	ttl    time.Duration
+	secret   []byte
+	ttl      time.Duration
+	readOnly bool
 }
+
+// SetReadOnly makes regular sessions read-only (public demo mode).
+func (m *Manager) SetReadOnly(readOnly bool) { m.readOnly = readOnly }
+
+// ReadOnly reports whether the public demo mode is on.
+func (m *Manager) ReadOnly() bool { return m.readOnly }
 
 // NewManager crea un Manager con el secreto y el tiempo de vida indicados.
 func NewManager(secret string, ttl time.Duration) *Manager {
@@ -28,10 +37,20 @@ func NewManager(secret string, ttl time.Duration) *Manager {
 
 // Generate emite un token firmado para el usuario y rol indicados.
 func (m *Manager) Generate(userID uuid.UUID, role string) (string, error) {
+	return m.generate(userID, role, !m.readOnly)
+}
+
+// GenerateOwner emite un token con permiso de escritura aunque la demo sea de solo lectura.
+func (m *Manager) GenerateOwner(userID uuid.UUID, role string) (string, error) {
+	return m.generate(userID, role, true)
+}
+
+func (m *Manager) generate(userID uuid.UUID, role string, rw bool) (string, error) {
 	now := time.Now()
 	claims := Claims{
 		UserID: userID,
 		Role:   role,
+		RW:     rw,
 		RegisteredClaims: jwt.RegisteredClaims{
 			Subject:   userID.String(),
 			IssuedAt:  jwt.NewNumericDate(now),

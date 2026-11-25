@@ -15,16 +15,21 @@ type Config struct {
 	JWTSecret   string
 	JWTTTL      time.Duration
 	CORSOrigin  string
+	// DemoReadOnly blocks every write unless the session was opened with OwnerPassword.
+	DemoReadOnly  bool
+	OwnerPassword string
 }
 
 // Load lee la configuración del entorno y aplica valores por defecto razonables
 // para desarrollo. Devuelve error solo cuando falta un valor obligatorio.
 func Load() (Config, error) {
 	cfg := Config{
-		DatabaseURL: getenv("DATABASE_URL", "postgres://app:app@localhost:5432/ecommerce?sslmode=disable"),
-		HTTPAddr:    getenv("HTTP_ADDR", ":8080"),
-		JWTSecret:   getenv("JWT_SECRET", ""),
-		CORSOrigin:  getenv("CORS_ORIGIN", "http://localhost:3000"),
+		DatabaseURL:   getenv("DATABASE_URL", "postgres://app:app@localhost:5432/ecommerce?sslmode=disable"),
+		HTTPAddr:      getenv("HTTP_ADDR", ":8080"),
+		JWTSecret:     getenv("JWT_SECRET", ""),
+		CORSOrigin:    getenv("CORS_ORIGIN", "http://localhost:3000"),
+		DemoReadOnly:  os.Getenv("DEMO_READONLY") == "true",
+		OwnerPassword: os.Getenv("OWNER_PASSWORD"),
 	}
 
 	// Platforms like Vercel assign the port through PORT.
