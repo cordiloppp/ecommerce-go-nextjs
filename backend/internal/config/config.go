@@ -27,6 +27,11 @@ func Load() (Config, error) {
 		CORSOrigin:  getenv("CORS_ORIGIN", "http://localhost:3000"),
 	}
 
+	// Platforms like Vercel assign the port through PORT.
+	if port := os.Getenv("PORT"); port != "" && os.Getenv("HTTP_ADDR") == "" {
+		cfg.HTTPAddr = ":" + port
+	}
+
 	hours, err := strconv.Atoi(getenv("JWT_TTL_HOURS", "24"))
 	if err != nil {
 		return Config{}, fmt.Errorf("JWT_TTL_HOURS inválido: %w", err)
