@@ -1,5 +1,9 @@
 # E-commerce de productos electrónicos
 
+**Demo en vivo:** https://ecommerce-go-nextjs.vercel.app · admin: `admin@demo.com` / `admin1234` · cupón `DEMO10`
+
+Publicado en Vercel como dos servicios (Next.js + API en Go) con PostgreSQL en Neon. Las migraciones se aplican al arrancar la API.
+
 Monorepo full-stack:
 
 - **`backend/`** — API REST en Go 1.22 (chi + pgx/v5 + sqlc), JWT auth, PostgreSQL.
