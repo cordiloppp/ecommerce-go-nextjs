@@ -2,6 +2,8 @@
 
 **Demo en vivo:** https://ecommerce-go-nextjs.vercel.app · admin: `admin@demo.com` / `admin1234` · cupón `DEMO10`
 
+> La demo pública es de **solo lectura** (`DEMO_READONLY=true`): se puede ver el catálogo y el panel, pero registrarse, usar el carrito, comprar o editar responde 403. Solo una sesión abierta con `OWNER_PASSWORD` puede escribir.
+
 Publicado en Vercel como dos servicios (Next.js + API en Go) con PostgreSQL en Neon. Las migraciones se aplican al arrancar la API.
 
 Monorepo full-stack:
