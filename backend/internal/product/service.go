@@ -154,15 +154,22 @@ func (in *Input) normalize() {
 		in.Slug = Slugify(in.Slug)
 	}
 	if in.Currency == "" {
-		in.Currency = "EUR"
+		in.Currency = "MXN"
 	}
 }
 
 var nonSlug = regexp.MustCompile(`[^a-z0-9]+`)
 
 // Slugify convierte un texto en un slug url-friendly.
+// accents maps Spanish letters to ASCII so "Teclado mecánico" becomes
+// "teclado-mecanico" instead of losing the letter.
+var accents = strings.NewReplacer(
+	"á", "a", "é", "e", "í", "i", "ó", "o", "ú", "u", "ü", "u", "ñ", "n",
+)
+
 func Slugify(s string) string {
 	s = strings.ToLower(strings.TrimSpace(s))
+	s = accents.Replace(s)
 	s = nonSlug.ReplaceAllString(s, "-")
 	return strings.Trim(s, "-")
 }

@@ -32,7 +32,7 @@ export default function AdminLayout({
 
   return (
     <div>
-      <h1 className="mb-4 text-2xl font-bold">Panel de administración</h1>
+      <h1 className="mb-4 text-[28px] font-medium tracking-[-0.01em]">Panel de administración</h1>
       <nav className="mb-6 flex gap-2 border-b">
         {tabs.map((t) => (
           <Link

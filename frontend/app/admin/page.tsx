@@ -20,14 +20,14 @@ export default function AdminHome() {
         href="/admin/products"
         className="rounded-lg border bg-white p-6 hover:shadow"
       >
-        <div className="text-3xl font-bold">{products ?? "—"}</div>
+        <div className="text-[28px] font-medium tabular-nums">{products ?? "—"}</div>
         <div className="text-gray-500">Productos en catálogo</div>
       </Link>
       <Link
         href="/admin/discounts"
         className="rounded-lg border bg-white p-6 hover:shadow"
       >
-        <div className="text-3xl font-bold">{discounts ?? "—"}</div>
+        <div className="text-[28px] font-medium tabular-nums">{discounts ?? "—"}</div>
         <div className="text-gray-500">Cupones de descuento</div>
       </Link>
     </div>

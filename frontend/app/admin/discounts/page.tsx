@@ -122,12 +122,12 @@ export default function AdminDiscounts() {
             className="input"
           >
             <option value="percent">Porcentaje (%)</option>
-            <option value="fixed">Importe fijo (€)</option>
+            <option value="fixed">Importe fijo (MXN)</option>
           </select>
         </label>
         <label className="block text-sm">
           <span className="mb-1 block text-gray-600">
-            {form.type === "percent" ? "Porcentaje (0-100)" : "Importe (€)"}
+            {form.type === "percent" ? "Porcentaje (0-100)" : "Importe (MXN)"}
           </span>
           <input
             type="number"
@@ -139,7 +139,7 @@ export default function AdminDiscounts() {
           />
         </label>
         <label className="block text-sm">
-          <span className="mb-1 block text-gray-600">Subtotal mínimo (€)</span>
+          <span className="mb-1 block text-gray-600">Subtotal mínimo (MXN)</span>
           <input
             type="number"
             step="0.01"

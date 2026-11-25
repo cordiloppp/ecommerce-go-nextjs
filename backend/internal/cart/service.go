@@ -64,7 +64,7 @@ func (s *Service) buildView(ctx context.Context, cartID uuid.UUID) (View, error)
 		return View{}, err
 	}
 
-	v := View{ID: cartID, Items: make([]ItemView, 0, len(rows)), Currency: "EUR"}
+	v := View{ID: cartID, Items: make([]ItemView, 0, len(rows)), Currency: "MXN"}
 	for _, it := range rows {
 		line := it.UnitPriceCents * int64(it.Quantity)
 		v.SubtotalCents += line

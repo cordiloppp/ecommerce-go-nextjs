@@ -92,14 +92,14 @@ type demoProduct struct {
 
 func seedProducts(ctx context.Context, q *db.Queries) error {
 	demos := []demoProduct{
-		{"Auriculares Bluetooth Pro", 8999, 50, "https://picsum.photos/seed/headphones/600/400", "Audio", "Cancelación de ruido activa y 30h de batería."},
-		{"Teclado Mecánico RGB", 12999, 30, "https://picsum.photos/seed/keyboard/600/400", "Periféricos", "Switches rojos, retroiluminación RGB y reposamuñecas."},
-		{"Ratón Gaming 16000 DPI", 5499, 60, "https://picsum.photos/seed/mouse/600/400", "Periféricos", "Sensor óptico de alta precisión y 8 botones programables."},
-		{"Monitor 27\" 144Hz", 24999, 20, "https://picsum.photos/seed/monitor/600/400", "Monitores", "Panel IPS QHD, 144Hz y 1ms de respuesta."},
-		{"SSD NVMe 1TB", 9999, 40, "https://picsum.photos/seed/ssd/600/400", "Almacenamiento", "Lectura de hasta 7000 MB/s."},
-		{"Webcam 4K", 7999, 25, "https://picsum.photos/seed/webcam/600/400", "Vídeo", "Grabación en 4K con enfoque automático."},
-		{"Cargador USB-C 100W", 3499, 80, "https://picsum.photos/seed/charger/600/400", "Accesorios", "Carga rápida GaN para portátiles y móviles."},
-		{"Altavoz Portátil", 4599, 45, "https://picsum.photos/seed/speaker/600/400", "Audio", "Resistente al agua IPX7 y 20h de autonomía."},
+		{"Audífonos Bluetooth Pro", 179900, 50, "", "Audio", "Cancelación de ruido activa y 30h de batería."},
+		{"Teclado Mecánico RGB", 259900, 30, "", "Periféricos", "Switches rojos, retroiluminación RGB y reposamuñecas."},
+		{"Mouse Gamer 16000 DPI", 109900, 60, "", "Periféricos", "Sensor óptico de alta precisión y 8 botones programables."},
+		{"Monitor 27\" 144Hz", 499900, 20, "", "Monitores", "Panel IPS QHD, 144Hz y 1ms de respuesta."},
+		{"SSD NVMe 1TB", 199900, 40, "", "Almacenamiento", "Lectura de hasta 7000 MB/s."},
+		{"Webcam 4K", 159900, 25, "", "Video", "Grabación en 4K con enfoque automático."},
+		{"Cargador USB-C 100W", 69900, 80, "", "Accesorios", "Carga rápida GaN para laptops y celulares."},
+		{"Bocina Portátil", 89900, 45, "", "Audio", "Resistente al agua IPX7 y 20h de autonomía."},
 	}
 
 	for _, d := range demos {
@@ -114,7 +114,7 @@ func seedProducts(ctx context.Context, q *db.Queries) error {
 			Slug:        slug,
 			Description: d.desc,
 			PriceCents:  d.price,
-			Currency:    "EUR",
+			Currency:    "MXN",
 			Stock:       d.stock,
 			ImageUrl:    d.image,
 			Category:    d.category,

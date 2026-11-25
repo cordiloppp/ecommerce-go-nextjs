@@ -38,7 +38,7 @@ function LoginForm() {
 
   return (
     <div className="mx-auto max-w-sm">
-      <h1 className="mb-6 text-2xl font-bold">Iniciar sesión</h1>
+      <h1 className="mb-6 text-[28px] font-medium tracking-[-0.01em]">Iniciar sesión</h1>
       <form onSubmit={onSubmit} className="space-y-4">
         <input
           type="email"

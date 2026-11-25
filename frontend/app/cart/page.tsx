@@ -1,6 +1,8 @@
 "use client";
 
 import Link from "next/link";
+
+import ProductArt from "@/components/ProductArt";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -65,7 +67,7 @@ export default function CartPage() {
   if (!cart || cart.items.length === 0) {
     return (
       <div>
-        <h1 className="mb-4 text-2xl font-bold">Tu carrito</h1>
+        <h1 className="mb-4 text-[28px] font-medium tracking-[-0.01em]">Tu carrito</h1>
         <p className="text-gray-500">El carrito está vacío.</p>
         <Link href="/" className="mt-4 inline-block text-brand hover:underline">
           ← Ver productos
@@ -79,19 +81,16 @@ export default function CartPage() {
   return (
     <div className="grid gap-8 lg:grid-cols-3">
       <div className="lg:col-span-2">
-        <h1 className="mb-4 text-2xl font-bold">Tu carrito</h1>
+        <h1 className="mb-4 text-[28px] font-medium tracking-[-0.01em]">Tu carrito</h1>
         <div className="space-y-3">
           {cart.items.map((it) => (
             <div
               key={it.id}
               className="flex items-center gap-4 rounded-lg border bg-white p-3"
             >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={it.image_url || "https://picsum.photos/120/120"}
-                alt={it.name}
-                className="h-16 w-16 rounded object-cover"
-              />
+              <div className="h-16 w-20 shrink-0 overflow-hidden rounded-[10px] border">
+                <ProductArt name={it.name} />
+              </div>
               <div className="flex-1">
                 <Link
                   href={`/products/${it.slug}`}
@@ -175,7 +174,7 @@ export default function CartPage() {
               <span>−{formatMoney(discount.discount_cents)}</span>
             </div>
           )}
-          <div className="flex justify-between border-t pt-2 text-base font-bold">
+          <div className="flex justify-between border-t pt-2 text-base font-semibold tabular-nums">
             <span>Total</span>
             <span>{formatMoney(total)}</span>
           </div>

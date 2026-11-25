@@ -40,7 +40,7 @@ export default function AdminProducts() {
       slug: f.slug || undefined,
       description: f.description,
       price_cents: Math.round(parseFloat(f.priceEuros || "0") * 100),
-      currency: "EUR",
+      currency: "MXN",
       stock: parseInt(f.stock || "0", 10),
       image_url: f.image_url,
       category: f.category,
@@ -123,7 +123,7 @@ export default function AdminProducts() {
           />
         </Field>
         <div className="flex gap-3">
-          <Field label="Precio (€)">
+          <Field label="Precio (MXN)">
             <input
               type="number"
               step="0.01"

@@ -55,8 +55,8 @@ function CheckoutFlow() {
   if (order) {
     return (
       <div className="mx-auto max-w-lg text-center">
-        <div className="mb-4 text-5xl">✅</div>
-        <h1 className="text-2xl font-bold">¡Pedido confirmado!</h1>
+        <div className="mx-auto mb-4 flex size-12 items-center justify-center rounded-full bg-volt text-gray-900"><svg viewBox="0 0 24 24" className="size-6" fill="none" stroke="currentColor" strokeWidth={2}><path d="M5 12.5 10 17l9-10" strokeLinecap="round" strokeLinejoin="round" /></svg></div>
+        <h1 className="text-[28px] font-medium tracking-[-0.01em]">Pedido confirmado</h1>
         <p className="mt-2 text-gray-600">
           Pago simulado realizado con éxito. Pedido{" "}
           <span className="font-mono">{order.order.id.slice(0, 8)}</span>.
@@ -81,7 +81,7 @@ function CheckoutFlow() {
                 <span>−{formatMoney(order.order.discount_cents)}</span>
               </div>
             )}
-            <div className="flex justify-between text-base font-bold">
+            <div className="flex justify-between text-base font-semibold tabular-nums">
               <span>Total</span>
               <span>{formatMoney(order.order.total_cents)}</span>
             </div>
@@ -100,7 +100,7 @@ function CheckoutFlow() {
   if (!cart || cart.items.length === 0) {
     return (
       <div>
-        <h1 className="mb-4 text-2xl font-bold">Checkout</h1>
+        <h1 className="mb-4 text-[28px] font-medium tracking-[-0.01em]">Checkout</h1>
         <p className="text-gray-500">El carrito está vacío.</p>
         <Link href="/" className="mt-4 inline-block text-brand hover:underline">
           ← Ver productos
@@ -113,7 +113,7 @@ function CheckoutFlow() {
 
   return (
     <div className="mx-auto max-w-lg">
-      <h1 className="mb-6 text-2xl font-bold">Finalizar compra</h1>
+      <h1 className="mb-6 text-[28px] font-medium tracking-[-0.01em]">Finalizar compra</h1>
 
       <div className="rounded-lg border bg-white p-5">
         {cart.items.map((it) => (
@@ -136,7 +136,7 @@ function CheckoutFlow() {
               <span>−{formatMoney(preview.discount_cents)}</span>
             </div>
           )}
-          <div className="flex justify-between border-t pt-2 text-lg font-bold">
+          <div className="flex justify-between border-t pt-2 text-lg font-semibold tabular-nums">
             <span>Total</span>
             <span>{formatMoney(total)}</span>
           </div>
@@ -144,7 +144,7 @@ function CheckoutFlow() {
       </div>
 
       <div className="mt-4 rounded-lg border border-dashed bg-blue-50 p-4 text-sm text-blue-700">
-        💳 Pago simulado: no se cobra nada real. Al confirmar se crea el pedido
+        Pago simulado: no se cobra nada real. Al confirmar se crea el pedido
         y se descuenta el stock.
       </div>
 
